@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/CPFL/ouster.svg?branch=autoware_branch)](https://travis-ci.org/CPFL/ouster)
+
 # OS1 ROS Node
 
 ## Building the ROS Node

@@ -30,3 +30,19 @@ add_executable(${PROJECT_NAME} src/os1_node.cpp src/os1_ros.cpp src/os1.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
 
+install(TARGETS
+            ${PROJECT_NAME}
+            ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+            LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+            RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+            )
+
+install(DIRECTORY launch/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+        PATTERN ".svn" EXCLUDE
+        )
+
+install(DIRECTORY rviz/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz
+        PATTERN ".svn" EXCLUDE
+        )

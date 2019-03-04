@@ -9,7 +9,7 @@ namespace OS1 {
 
 using namespace ouster::OS1;
 
-static bool _pointcloud_mode_xyzir = false;
+static std::string _pointcloud_mode = "NATIVE";
 
 ns timestamp_of_imu_packet(const PacketMsg& pm) {
     return ns(imu_gyro_ts(pm.buf.data()));
@@ -75,11 +75,27 @@ sensor_msgs::PointCloud2 cloud_to_cloud_msg(const CloudOS1& cloud, ns timestamp,
     /**
      * @note Added to support Velodyne compatible pointcloud format for Autoware
      */
-    if (_pointcloud_mode_xyzir) {
-    	CloudOS1XYZIR cloud_xyzir;
-    	convert2XYZIR(cloud, cloud_xyzir);
-    	pcl::toROSMsg(cloud_xyzir, msg);
-    } else {
+    if (_pointcloud_mode == "XYZ") {
+    	CloudOS1XYZ cloud_aux;
+    	convert2XYZ(cloud, cloud_aux);
+    	pcl::toROSMsg(cloud_aux, msg);
+    } else if (_pointcloud_mode == "XYZI") {
+    	CloudOS1XYZI cloud_aux;
+    	convert2XYZI(cloud, cloud_aux);
+    	pcl::toROSMsg(cloud_aux, msg);
+    } else if (_pointcloud_mode == "XYZIR") {
+    	CloudOS1XYZIR cloud_aux;
+    	convert2XYZIR(cloud, cloud_aux);
+    	pcl::toROSMsg(cloud_aux, msg);
+    } else if (_pointcloud_mode == "XYZIF") {
+    	CloudOS1XYZIF cloud_aux;
+    	convert2XYZIF(cloud, cloud_aux);
+    	pcl::toROSMsg(cloud_aux, msg);
+    } else if (_pointcloud_mode == "XYZIFN") {
+    	CloudOS1XYZIFN cloud_aux;
+    	convert2XYZIFN(cloud, cloud_aux);
+    	pcl::toROSMsg(cloud_aux, msg);
+    } else { //"NATIVE"
     	pcl::toROSMsg(cloud, msg);
     }
 
@@ -102,6 +118,7 @@ static PointOS1 nth_point(int ind, const uint8_t* col_buf) {
     PointOS1 point;
     point.reflectivity = px_reflectivity(px_buf);
     point.intensity = px_signal_photons(px_buf);
+    point.noise = px_noise_photons(px_buf); //added to extract ambient noise data
     point.x = -r * tte.cos_beam_altitude_angles * cosf(h_angle);
     point.y = r * tte.cos_beam_altitude_angles * sinf(h_angle);
     point.z = r * tte.sin_beam_altitude_angles;
@@ -179,9 +196,34 @@ std::function<void(const PacketMsg&)> batch_packets(
 /**
  * @note Added to support Velodyne compatible pointcloud format for Autoware
  */
-void set_point_mode(bool mode_xyzir)
+void set_point_mode(std::string mode_xyzir)
 {
-    _pointcloud_mode_xyzir = mode_xyzir;
+    _pointcloud_mode = mode_xyzir;
+}
+
+void convert2XYZ(const CloudOS1& in, CloudOS1XYZ& out) 
+{
+   out.points.clear();
+   pcl::PointXYZ q;
+   for (auto p : in.points) {
+       q.x = p.x;
+       q.y = p.y;
+       q.z = p.z;
+       out.points.push_back(q);
+   }
+}
+
+void convert2XYZI(const CloudOS1& in, CloudOS1XYZI& out) 
+{
+   out.points.clear();
+   pcl::PointXYZI q;
+   for (auto p : in.points) {
+       q.x = p.x;
+       q.y = p.y;
+       q.z = p.z;
+       q.intensity = p.intensity;
+       out.points.push_back(q);
+   }
 }
 
 /**
@@ -190,13 +232,49 @@ void set_point_mode(bool mode_xyzir)
 void convert2XYZIR(const CloudOS1& in, CloudOS1XYZIR& out) 
 {
    out.points.clear();
-   PointOS1XYZIR q;
+   PointXYZIR q;
+   for (auto p : in.points) {
+       q.x = p.x;
+       q.y = p.y;
+       q.z = p.z;
+       q.intensity = ((float)p.intensity/65535.0)*255.0; //velodyne uses values in [0..255] range
+       q.ring = p.ring;
+       out.points.push_back(q);
+   }
+}
+
+/**
+ * @note Extract intensity and reflectivity data
+ */
+void convert2XYZIF(const CloudOS1& in, CloudOS1XYZIF& out) 
+{
+   out.points.clear();
+   PointXYZIF q;
    for (auto p : in.points) {
        q.x = p.x;
        q.y = p.y;
        q.z = p.z;
        q.intensity = p.intensity;
-       q.ring = p.ring;
+       q.reflectivity = p.reflectivity;
+       out.points.push_back(q);
+   }
+}
+
+/**
+ * @note Extract intensity and reflectivity and ambient noise data
+ */
+
+void convert2XYZIFN(const CloudOS1& in, CloudOS1XYZIFN& out) 
+{
+   out.points.clear();
+   PointXYZIFN q;
+   for (auto p : in.points) {
+       q.x = p.x;
+       q.y = p.y;
+       q.z = p.z;
+       q.intensity = p.intensity;
+       q.reflectivity = p.reflectivity;
+       q.noise = p.noise;
        out.points.push_back(q);
    }
 }

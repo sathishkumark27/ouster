@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     auto imu_topic_name = nh.param("imu_topic_name", std::string("/imu_raw"));
     auto lidar_frame_name = nh.param("lidar_frame_name", std::string("/os1"));
     auto imu_frame_name = nh.param("imu_frame_name", std::string("/os1_imu"));
-    auto mode_xyzir = nh.param("mode_xyzir", false);
+    auto pointcloud_mode = nh.param("pointcloud_mode", std::string("NATIVE"));
     auto operation_mode = nh.param("operation_mode", 1);
     auto pulse_mode = nh.param("pulse_mode", 0);
     auto window_rejection = nh.param("window_rejection", true);
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
      * @note Added to support Velodyne compatible pointcloud format for Autoware
      */
     //defines the pointcloud mode
-    ouster_ros::OS1::set_point_mode(mode_xyzir);
+    ouster_ros::OS1::set_point_mode(pointcloud_mode);
     //----------------
     /**
      * @note Added to support advanced mode parameters configuration for Autoware

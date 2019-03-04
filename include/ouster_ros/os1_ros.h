@@ -21,7 +21,11 @@ namespace ouster_ros {
 namespace OS1 {
 
 using CloudOS1 = pcl::PointCloud<PointOS1>;
-using CloudOS1XYZIR = pcl::PointCloud<PointOS1XYZIR>;
+using CloudOS1XYZ = pcl::PointCloud<pcl::PointXYZ>;
+using CloudOS1XYZI = pcl::PointCloud<pcl::PointXYZI>;
+using CloudOS1XYZIR = pcl::PointCloud<PointXYZIR>;
+using CloudOS1XYZIF = pcl::PointCloud<PointXYZIF>;
+using CloudOS1XYZIFN = pcl::PointCloud<PointXYZIFN>;
 using ns = std::chrono::nanoseconds;
 
 /**
@@ -116,18 +120,35 @@ std::function<void(const PacketMsg&)> batch_packets(
 
 /**
  * Define the pointcloud type to use
- * @param mode_xyzir to publish PointXYZIR point cloud type (when true), or the native PointOS1 (when false)
- *
- * @note This function was added to support velodyne compatible mode for Autoware.
+ * @param mode_xyzir specifies the point cloud type to publish
+ * supported values: NATIVE, XYZ, XYZI, XYZIR, XYZIF, XYZIFN
  */
-void set_point_mode(bool mode_xyzir);
+void set_point_mode(std::string mode_xyzir);
+
+/**
+ * Converts the OS1 native point format to XYZ
+ */
+void convert2XYZ(const CloudOS1& in, CloudOS1XYZ& out);
+
+/**
+ * Converts the OS1 native point format to XYZI
+ */
+void convert2XYZI(const CloudOS1& in, CloudOS1XYZI& out);
 
 /**
  * Converts the OS1 native point format to XYZIR (Velodyne like) 
- * 
- * @note This function was added to support velodyne compatible mode for Autoware.
  */
 void convert2XYZIR(const CloudOS1& in, CloudOS1XYZIR& out);
+
+/**
+ * Converts the OS1 native point format to XYZIF (with intensity and reflectivity) 
+ */
+void convert2XYZIF(const CloudOS1& in, CloudOS1XYZIF& out);
+
+/**
+ * Converts the OS1 native point format to XYZIFN (with intensity and reflectivity and ambient noise)
+ */
+void convert2XYZIFN(const CloudOS1& in, CloudOS1XYZIFN& out);
 
 }
 }

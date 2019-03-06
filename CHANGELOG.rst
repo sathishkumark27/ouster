@@ -2,6 +2,10 @@
 Changelog for package ouster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updated LICENSE
+
 0.1.2 (2019-03-06)
 ------------------
 * Changed operation mode from integer to string to ease reading.

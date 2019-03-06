@@ -2,8 +2,8 @@
 Changelog for package ouster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.3 (2019-03-06)
+------------------
 * Updated LICENSE
 
 0.1.2 (2019-03-06)

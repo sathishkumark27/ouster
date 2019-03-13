@@ -2,6 +2,10 @@
 Changelog for package ouster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updated project name to follow ros standards
+
 0.1.3 (2019-03-06)
 ------------------
 * Updated LICENSE

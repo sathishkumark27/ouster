@@ -2,9 +2,9 @@
 
 #include "ouster/os1.h"
 #include "ouster/os1_packet.h"
-#include "ouster_ros/os1_ros.h"
+#include "ouster_driver/os1_ros.h"
 
-namespace ouster_ros {
+namespace ouster_driver {
 namespace OS1 {
 
 using namespace ouster::OS1;

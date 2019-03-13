@@ -18,7 +18,7 @@
   <arg name="pulse_mode" default="0" doc="Laser pulse width"/>
   <arg name="window_rejection" default="true" doc="Window rejection enable"/>
 
-  <node pkg="ouster_ros" type="ouster_ros" name="ouster_ros" output="screen" >
+  <node pkg="ouster_driver" type="ouster_driver" name="ouster_driver" output="screen" >
     <param name="os1_lidar_address" value="$(arg lidar_address)"/>
     <param name="pc_address" value="$(arg pc_address)"/>
     <param name="os1_lidar_port" value="$(arg lidar_port)"/>

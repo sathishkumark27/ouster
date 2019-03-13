@@ -2,7 +2,7 @@
 #define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 
-namespace ouster_ros {
+namespace ouster_driver {
 namespace OS1 {
 
 struct EIGEN_ALIGN16 PointOS1 {
@@ -40,7 +40,7 @@ struct EIGEN_ALIGN16 PointXYZIFN {
 }
 }
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointOS1,
+POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_driver::OS1::PointOS1,
     (float, x, x)
     (float, y, y)
     (float, z, z)
@@ -50,7 +50,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointOS1,
     (uint8_t, ring, ring)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointXYZIR,
+POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_driver::OS1::PointXYZIR,
     (float, x, x)
     (float, y, y)
     (float, z, z)
@@ -58,7 +58,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointXYZIR,
     (uint16_t, ring, ring)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointXYZIF,
+POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_driver::OS1::PointXYZIF,
     (float, x, x)
     (float, y, y)
     (float, z, z)
@@ -66,7 +66,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointXYZIF,
     (uint16_t, reflectivity, reflectivity)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::OS1::PointXYZIFN,
+POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_driver::OS1::PointXYZIFN,
     (float, x, x)
     (float, y, y)
     (float, z, z)

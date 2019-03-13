@@ -27,11 +27,11 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "ouster_ros/PacketMsg.h"
-#include "ouster_ros/os1_ros.h"
+#include "ouster_driver/PacketMsg.h"
+#include "ouster_driver/os1_ros.h"
 
 using ns = std::chrono::nanoseconds;
-using PacketMsg = ouster_ros::PacketMsg;
+using PacketMsg = ouster_driver::PacketMsg;
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "os1_node");
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
      * @note Added to support Velodyne compatible pointcloud format for Autoware
      */
     //defines the pointcloud mode
-    ouster_ros::OS1::set_point_mode(pointcloud_mode);
+    ouster_driver::OS1::set_point_mode(pointcloud_mode);
     //----------------
     /**
      * @note Added to support advanced mode parameters configuration for Autoware
@@ -89,14 +89,14 @@ int main(int argc, char** argv) {
     auto lidar_pub = nh.advertise<sensor_msgs::PointCloud2>(points_topic_name, queue_size);
     auto imu_pub = nh.advertise<sensor_msgs::Imu>(imu_topic_name, queue_size);
 
-    auto lidar_handler = ouster_ros::OS1::batch_packets(
-        scan_dur, [&](ns scan_ts, const ouster_ros::OS1::CloudOS1& cloud) {
+    auto lidar_handler = ouster_driver::OS1::batch_packets(
+        scan_dur, [&](ns scan_ts, const ouster_driver::OS1::CloudOS1& cloud) {
             lidar_pub.publish(
-                ouster_ros::OS1::cloud_to_cloud_msg(cloud, scan_ts, lidar_frame_name));
+              ouster_driver::OS1::cloud_to_cloud_msg(cloud, scan_ts, lidar_frame_name));
         });
 
     auto imu_handler = [&](const PacketMsg& p) {
-        imu_pub.publish(ouster_ros::OS1::packet_to_imu_msg(p, imu_frame_name));
+        imu_pub.publish(ouster_driver::OS1::packet_to_imu_msg(p, imu_frame_name));
     };
 
     if (replay_mode) {
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        ouster_ros::OS1::spin(*cli,
+        ouster_driver::OS1::spin(*cli,
                               [&](const PacketMsg& pm) {
                                   lidar_packet_pub.publish(pm);
                                   lidar_handler(pm);

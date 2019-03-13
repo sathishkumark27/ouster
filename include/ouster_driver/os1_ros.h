@@ -13,11 +13,11 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 
-#include "ouster_ros/PacketMsg.h"
+#include "ouster_driver/PacketMsg.h"
 #include "ouster/os1.h"
-#include "ouster_ros/point_os1.h"
+#include "ouster_driver/point_os1.h"
 
-namespace ouster_ros {
+namespace ouster_driver {
 namespace OS1 {
 
 using CloudOS1 = pcl::PointCloud<PointOS1>;

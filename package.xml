@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ouster_ros</name>
+  <name>ouster_driver</name>
   <version>0.1.4</version>
   <description>OS1 ROS client</description>
   <author email="oss@ouster.io">ouster developers</author>

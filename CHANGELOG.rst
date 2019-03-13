@@ -2,8 +2,8 @@
 Changelog for package ouster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.6 (2019-03-13)
+------------------
 * Renamed ouster_ros to ouster_driver
 
 0.1.5 (2019-03-13)

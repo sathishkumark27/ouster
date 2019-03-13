@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ouster_ros)
+project(ouster_driver)
 
 add_compile_options(-std=c++11 -Wall)
 
@@ -22,7 +22,7 @@ include_directories(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ouster_ros
+  LIBRARIES ouster_driver
   CATKIN_DEPENDS pcl_ros pcl_conversions roscpp message_runtime std_msgs sensor_msgs
 )
 

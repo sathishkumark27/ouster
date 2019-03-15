@@ -13,7 +13,7 @@
 ## Running the ROS Node
 * Set up the ROS environment with `source /path/to/myworkspace/devel/setup.bash` in a new terminal for each command below
 * For use with a running sensor:
-  - To publish OS1 data as ROS topic `roslaunch ouster_driver os1.launch os1_hostname:=<os1_hostname> os1_udp_dest:=<udp_data_dest>` where `<os1_hostname>` can be the hostname or IP of the OS1 device and `<udp_data_dest>` is the IP to which the sensor should send data to (i.e., your computer's IP address on the interface connected to the OS1)
+  - To publish OS1 data as ROS topic `roslaunch ouster_driver os1.launch lidar_address:=<os1_hostname> pc_address:=<udp_data_dest>` where `<os1_hostname>` can be the hostname or IP address of the OS1 device, and `<udp_data_dest>` is the hostname or IP address to which the sensor should send data to (i.e., your computer's IP address on the interface connected to the OS1)
   - To record raw sensor output, run `rosbag record /os1_node/imu_packets /os1_node/lidar_packets` in another terminal
   - *Note: `os1_node/lidar_packets` and `os1_node/imu_packets` are the "raw data" topics, while `os1_node/points` is the ROS compatible XYZ topic and `os1_node/imu` is the ROS compatible IMU topic*
   - To visualize output, run `rviz -d /path/to/ouster_driver/rviz/viz.rviz` in another terminal
@@ -56,4 +56,5 @@ where `<HOSTNAME>` is your computer's assigned hostname, `<INTERFACENAME>` is th
 - [x] Velodyne compatibility mode.
 - [x] Configure active sensor parameters from driver code, in particular `lidar_mode`.
 - [ ] Fix `replay` option currently not working.
-- [ ] Verify the sensor operation information and attempt software reset on error condition, and current parameter values to avoid unnecessary rewrites/reinitialization.
+- [x] Verify the sensor operation information and attempt software reset on error condition, and current parameter values to avoid unnecessary rewrites/reinitialization.
+

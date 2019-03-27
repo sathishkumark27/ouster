@@ -4,6 +4,8 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <vector>
+#include <algorithm>
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -119,7 +121,7 @@ std::shared_ptr<client> init_client(const std::string& hostname,
     std::string cmd;
 
     auto do_cmd = [&](const std::string& op, const std::string& val) {
-        const size_t max_res_len = 64;
+        const size_t max_res_len = 4095;
         char read_buf[max_res_len + 1];
 
         ssize_t len;
@@ -165,6 +167,20 @@ std::shared_ptr<client> init_client(const std::string& hostname,
     	} 
         return res;
     };
+    
+    auto str_tok = [&](const std::string &str, const std::string delim) {
+    	auto start = str.find_first_not_of(delim);
+    	auto end = start;
+		std::vector<std::string> tokens;
+
+		while (start != std::string::npos){
+		    end = str.find_first_of(delim, start);
+		    tokens.push_back(str.substr(start, end-start));
+		    start = str.find_first_not_of(delim, end);
+		}
+		
+		return tokens;
+    };
 
     bool success = true;
     success &= do_cmd_chk("set_udp_port_lidar", std::to_string(lidar_port));
@@ -176,9 +192,50 @@ std::shared_ptr<client> init_client(const std::string& hostname,
     /**
      * @note Added to support advanced mode parameters configuration
      */
+    //read the sensor information
+    std::string version_str = std::string("");
+    std::string product_str = std::string("");
+    bool has_pulsemode = true;
+    auto sensor_info_str = get_cmd("get_sensor_info", "");
+    auto tokens = str_tok(sensor_info_str, std::string(",: \""));
+    auto pos = std::find(tokens.begin(), tokens.end(), "build_rev");
+    if (pos != tokens.end()) {
+    	version_str = *(pos+1);
+    }
+    pos = std::find(tokens.begin(), tokens.end(), "prod_line");
+    if (pos != tokens.end()) {
+    	product_str = *(pos+1);
+    }
+    if (product_str == std::string("") || version_str == std::string("")) {
+		std::cout << "Error: Failed to read product name and firmware version." << std::endl;
+    	return std::shared_ptr<client>();    	
+    }
+    std::cout << "Ouster model \"" << product_str << "\", firmware version \"" << version_str << "\"" << std::endl;
+    //TODO: support OS-1-16 and OS-1-128
+    if (product_str != std::string("OS-1-64")) {
+    	std::cout << "Error: this driver currently only supports Ouster model \"OS-1-64\"." << std::endl;
+    	return std::shared_ptr<client>();
+    }
+    
+    auto ver_numbers = str_tok(version_str, std::string("v."));
+    //check the minor version
+    auto ver_major = std::stoi(ver_numbers[0], nullptr);
+    auto ver_minor = std::stoi(ver_numbers[1], nullptr);
+    if (ver_major < 1 || ver_minor < 7) {
+    	std::cout << "Error: Firmware version \"" << version_str << "\" is not supported, please upgrade" << std::endl;
+    	return std::shared_ptr<client>();
+    }
+    if (std::stoi(ver_numbers[1], nullptr) >= 10) {
+    	std::cout << "On firmware version \"" << version_str << "\" the \"pulse_mode\" parameter is no longer available, will ignore it." << std::endl;
+    	has_pulsemode = false;
+    }
+    
     //read the current settings
     auto curr_operation_mode_str = get_cmd("get_config_param", "active lidar_mode");
-    auto curr_pulse_mode_str = get_cmd("get_config_param", "active pulse_mode");
+    auto curr_pulse_mode_str = std::string("");
+    if (has_pulsemode) {
+    	curr_pulse_mode_str = get_cmd("get_config_param", "active pulse_mode");
+   	}
     auto curr_window_rejection_str = get_cmd("get_config_param", "active window_rejection_enable");
     bool do_configure = false;
     success = true;
@@ -188,7 +245,7 @@ std::shared_ptr<client> init_client(const std::string& hostname,
     	success &= do_cmd_chk("set_config_param", "lidar_mode " + _operation_mode_str);
     	do_configure = true;
    	}
-   	if (curr_pulse_mode_str != _pulse_mode_str) {
+   	if (has_pulsemode && (curr_pulse_mode_str != _pulse_mode_str)) {
 	    success &= do_cmd_chk("set_config_param", "pulse_mode " + _pulse_mode_str);
 	    do_configure = true;
     }

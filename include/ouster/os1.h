@@ -81,10 +81,9 @@ typedef enum {
 using PulseMode = pulse_mode_t;
 /**
  * Define the pointcloud type to use
- * @param operation_mode defines
- * @param pulse_mode
- * @param window_rejection
- * 
+ * @param operation_mode defines the resolution and frame rate
+ * @param pulse_mode is the width of the laser pulse (standard or narrow)
+ * @param window_rejection to reject short range data (true), or to accept short range data (false)
  * @note This function was added to configure advanced operation modes for Autoware
  */
 void set_advanced_params(std::string operation_mode_str, std::string pulse_mode_str, bool window_rejection);

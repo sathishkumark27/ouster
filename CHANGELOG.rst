@@ -2,8 +2,8 @@
 Changelog for package ouster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.7 (2019-03-28)
+------------------
 * Sensor model and firmware version validation
 * Added sensor model and firmware version validation. The driver currently only works for OS-1-64 and on firmware version 1.10 some configuration parameters disappeared.
 * Parameter validation and new pointcloud types

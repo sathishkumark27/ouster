@@ -17,6 +17,9 @@
 #include "ouster_driver/PacketMsg.h"
 #include "ouster_driver/point_os1.h"
 
+#include <tf2/LinearMath/Transform.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 namespace ouster_driver {
 namespace OS1 {
 
@@ -73,6 +76,11 @@ ns timestamp_of_lidar_packet(const PacketMsg& pm);
  */
 sensor_msgs::Imu packet_to_imu_msg(const PacketMsg& pm,
                                    const std::string& frame = "os1_imu");
+
+/** Transforms the frame from os1_sensor to os1_lidar **/
+geometry_msgs::TransformStamped transform_to_tf_msg(
+    const std::vector<double>& mat, const std::string& frame,
+    const std::string& child_frame);                              
 
 /**
  * Accumulate points from a lidar packet message into a PCL point cloud. All

@@ -26,12 +26,19 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 #include "ouster_driver/PacketMsg.h"
 #include "ouster_driver/os1_ros.h"
 
 using ns = std::chrono::nanoseconds;
 using PacketMsg = ouster_driver::PacketMsg;
+
+extern const std::vector<double> imu_to_sensor_transform = {
+1, 0, 0, 6.253, 0, 1, 0, -11.775, 0, 0, 1, 7.645, 0, 0, 0, 1};
+
+extern const std::vector<double> lidar_to_sensor_transform = {
+-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 36.18, 0, 0, 0, 1};
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "os1_node");
@@ -51,6 +58,8 @@ int main(int argc, char** argv) {
     auto operation_mode_str = nh.param("operation_mode", std::string("1024x10"));
     auto pulse_mode_str = nh.param("pulse_mode", std::string("STANDARD"));
     auto window_rejection = nh.param("window_rejection", true);
+    // Publish tf
+    auto sensor_frame = nh.param("sensor_frame", std::string("/os1_sensor"));
     
     /**
      * @note Added to support Velodyne compatible pointcloud format for Autoware
@@ -99,6 +108,16 @@ int main(int argc, char** argv) {
             ROS_ERROR("Failed to initialize sensor at: %s", os1_hostname.c_str());
             return 1;
         }
+
+    // publish transforms
+    tf2_ros::StaticTransformBroadcaster tf_bcast{};
+
+    tf_bcast.sendTransform(ouster_driver::OS1::transform_to_tf_msg(
+        imu_to_sensor_transform, sensor_frame, imu_frame_name));
+
+    tf_bcast.sendTransform(ouster_driver::OS1::transform_to_tf_msg(
+       lidar_to_sensor_transform, sensor_frame, lidar_frame_name));
+
 
         ouster_driver::OS1::spin(*cli,
                               [&](const PacketMsg& pm) {
